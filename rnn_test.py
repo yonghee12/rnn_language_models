@@ -1,6 +1,6 @@
 import numpy as np
 
-from rnn_numpy_models import VanillaRNN
+from np_models.rnn_numpy_models import VanillaRNN
 
 input_dim, hidden_dim = 3, 5
 
