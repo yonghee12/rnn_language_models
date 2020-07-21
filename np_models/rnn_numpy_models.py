@@ -15,8 +15,6 @@ class VanillaRNN:
         self.cache = None
 
     def forward(self, x_t, h_prev):
-        # x_t = np.random.normal(0, 1, size=(1, input_dim))
-        # h_prev = np.random.normal(0, 1, size=(1, hidden_dim))
         Wx, Wh, bias = self.parameters
         linear = np.matmul(x_t, Wx) + np.matmul(h_prev, Wh) + bias
         h_next = np.tanh(linear)
