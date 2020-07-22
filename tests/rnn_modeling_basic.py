@@ -3,7 +3,7 @@ import nltk
 from nlp_commons.functions import *
 from nlp_commons.modules import *
 
-from np_models.rnn_numpy_models import VanillaRNN
+from from_numpy.models import *
 
 from nltk.corpus import stopwords
 from string import punctuation
@@ -36,6 +36,7 @@ y = seqs[:, -1]
 num_classes = len(token2idx) + 1  # 0번 인덱스는 one-hot에서 사용을 못함 (1 ~ 12 이므로)
 y_onehot = to_categorical_iterable(y, num_classes)
 
+# getting sample text
 austen_fileids = [f for f in nltk.corpus.gutenberg.fileids() if f.startswith('austen')]
 austen_fileids[0]
 emma = nltk.corpus.gutenberg.words(austen_fileids[0])
