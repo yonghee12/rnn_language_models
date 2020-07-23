@@ -1,6 +1,6 @@
 import numpy as np
 
-from from_numpy.models import *
+from deepnp.models import *
 
 input_dim, hidden_dim = 3, 5
 

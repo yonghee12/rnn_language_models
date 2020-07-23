@@ -1,4 +1,4 @@
-from from_numpy.models import *
+from deepnp.models import *
 
 
 class RNNTrainer:

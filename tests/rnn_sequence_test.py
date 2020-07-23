@@ -1,4 +1,4 @@
-from from_numpy.trainers import *
+from deepnp.trainers import *
 
 X = np.array([
     [[1, 2], [4, 6], [7, 9], [5, 1]],
