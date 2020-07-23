@@ -101,7 +101,19 @@ model = RNNTrainer(input_dim=input_dim, hidden_dim=200,
                    output_size=len(unique_tokens))
 model.fit(X_vectors, y_true, batch_size=x_size, lr=0.5, n_epochs=1000, print_many=False)
 
-predict_rnn_lm('miss')
-print()
 
-[' '.join(toks) for toks in total_used_tokens if len(toks) >= 5]
+def get_generated_sequence(start_token):
+    seq_str = start_token
+    seq = [seq_str]
+    for i in range(max_len - 2):
+        seq.append(predict_rnn_lm(seq_str))
+        seq_str = ' '.join(seq)
+    return seq_str
+
+
+gens = [get_generated_sequence(token) for token in unique_tokens]
+with open('results/generated.txt', 'w') as f:
+    f.write('\n'.join(gens))
+    f.close()
+
+[' '.join(toks) for toks in total_used_tokens if len(toks) >= max_len - 1]
