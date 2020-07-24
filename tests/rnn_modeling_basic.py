@@ -32,7 +32,7 @@ def get_tokenized_matrix(docs: List[str]):
 
 
 unique_tokens = get_uniques_from_nested_lists(tokens_matrix)
-token2idx, idx2token = get_item2idx(self.unique_tokens, unique=True, from_one=True)
+token2idx, idx2token = get_item2idx(self.unique_tokens, unique=True, start_from_one=True)
 
 max_len = max([len(arr) for arr in sequences])
 padded_sequences = pad_sequence_nested_lists(sequences, max_len, method='pre', truncating='pre')

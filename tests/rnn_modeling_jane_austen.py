@@ -5,6 +5,10 @@ from deepnp.trainers import *
 from nlp_commons.modules import *
 from hidden_packages.langframe.functions import get_model_instance
 
+stopwords_agg = stopwords.words('english') + list(punctuation)
+stopwords_hash = {k: 1 for k in stopwords_agg}
+punkt = {k: 1 for k in punctuation}
+
 
 def array_index_to_wv(arr, dim_restrict=None):
     vectors, used_tokens = [], []
@@ -19,7 +23,7 @@ def array_index_to_wv(arr, dim_restrict=None):
         return np.array(vectors), used_tokens
     except Exception as e:
         print(str(e))
-        return 'No vector', _
+        return 'No vector', None
 
 
 def predict_rnn_lm(test_str):
@@ -28,16 +32,12 @@ def predict_rnn_lm(test_str):
         indices = [token2idx[token] for token in test_tokens]
         x_test = pad_sequence_nested_lists([indices], max_len - 1, method='pre', truncating='pre')[0]
         x_test = np.array(x_test)
-        x_test, _ = array_index_to_wv(x_test, dim_restrict=input_dim)
+        x_test, _ = array_index_to_wv_padding(x_test, dim_restrict=input_dim)
         pred_idx = model.predict(x_test)
         return idx2token[pred_idx]
     except Exception as e:
         return str(e)
 
-
-stopwords_agg = stopwords.words('english') + list(punctuation)
-stopwords_hash = {k: 1 for k in stopwords_agg}
-punkt = {k: 1 for k in punctuation}
 
 # loading word vector
 wv = get_model_instance(model_name='glove_', model_filename='glove.6B.50d.txt', filepath='pretrained_models')
@@ -62,7 +62,7 @@ min_len, max_len = min(counts), max(counts)
 
 # token2idx, idx2token 생성
 unique_tokens = get_uniques_from_nested_lists(nested_tokens)
-token2idx, idx2token = get_item2idx(unique_tokens, unique=True, from_one=True)
+token2idx, idx2token = get_item2idx(unique_tokens, unique=True, start_from_one=True)
 
 # (0, 1), (0, 1, 2), (0, 1, 2, 3) 등으로 sequence 분할 후 padding
 sequences = get_sequences_matrix(nested_tokens, token2idx)
@@ -112,7 +112,7 @@ def get_generated_sequence(start_token):
 
 
 gens = [get_generated_sequence(token) for token in unique_tokens]
-with open('results/generated.txt', 'w') as f:
+with open('results/jane_generated.txt', 'w') as f:
     f.write('\n'.join(gens))
     f.close()
 
