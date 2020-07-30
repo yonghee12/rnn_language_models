@@ -1,4 +1,4 @@
-import numpy as np
+from deepnp.nploader import *
 
 
 def softmax(x):

@@ -2,9 +2,20 @@ from random import choice
 from progress_timer import Timer
 
 from deepnp.trainers import *
+from deepnp.config import GPU
+
 from hidden_packages.langframe.functions import *
 from hidden_packages.langframe.functions import get_model_instance
 from nlp_commons.modules import *
+
+if GPU:
+    if np.__name__ != 'cupy':
+        import cupy as np
+    np.cuda.Device(0).use()
+    print("using gpu:", np.cuda.is_available())
+
+import numpy as np
+print()
 
 stopwords_agg = stopwords.words('english') + list(punctuation)
 stopwords_hash = {k: 1 for k in stopwords_agg}
@@ -101,7 +112,7 @@ print(len(total_used_tokens))
 
 whole_batch = X_vectors.shape[0]
 model = RNNTrainer(input_dim=input_dim, hidden_dim=200, output_size=len(unique_tokens))
-model.fit(X_vectors, y_true, batch_size=whole_batch, lr=0.7, n_epochs=1000, print_many=False)
+model.fit(X_vectors, y_true, batch_size=whole_batch, lr=1, n_epochs=1000, print_many=False, verbose=1)
 
 # Generation logic
 # test_sequences = get_sequences_from_tokens_window(unique_tokens, token2idx, window_size=2)
@@ -124,8 +135,7 @@ for _ in range(1000):
     output_str = ' '.join([w1, w2, w3, w4])
     random_gens.append(output_str)
 
-
-loss_val = '0.427'
+loss_val = 'whole_matthew'
 with open(f'results/bible_generated_w3_loss{loss_val}.txt', 'w') as f:
     f.write('\n'.join(gens))
     f.close()

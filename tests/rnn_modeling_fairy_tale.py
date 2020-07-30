@@ -119,7 +119,7 @@ print(len(total_used_tokens))
 
 whole_batch = X_vectors.shape[0]
 model = RNNTrainer(input_dim=input_dim, hidden_dim=50, output_size=len(unique_tokens))
-model.fit(X_vectors, y_true, batch_size=whole_batch, lr=0.85, n_epochs=1000, print_many=False)
+model.fit(X_vectors, y_true, batch_size=whole_batch, lr=0.85, n_epochs=3000, print_many=False)
 
 # Generation logic
 # test_sequences = get_sequences_from_tokens_window(unique_tokens, token2idx, window_size=2)

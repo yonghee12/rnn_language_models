@@ -1,6 +1,4 @@
-import numpy as np
-
-from .functions import *
+from deepnp.functions import *
 
 
 class RNNCell:
@@ -37,7 +35,7 @@ class RNNCell:
         Wx, Wh, bias = self.parameters
         x_t, h_prev, h_next = self.cache['x_t'], self.cache['h_prev'], self.cache['h_next']
 
-        d_linear = d_h_next * (1 - np.square(h_next))   # element-wise dot product
+        d_linear = d_h_next * (1 - np.square(h_next))  # element-wise dot product
         d_bias = np.sum(d_linear, axis=0, keepdims=False)
         d_x_t = np.matmul(d_linear, Wx.T)
         d_h_prev = np.matmul(d_linear, Wh.T)
@@ -111,7 +109,7 @@ class RNNLayer:
         return self.grads
 
 
-# TODO: 이 아래는 다시 한 번 볼 필요 있음
+# TODO: 볼 필요
 #    1) softmax의 미분
 #    2) cross entrophy loss와 합쳐진 미분
 #    3) Negative Log Likelihood와의 관계
@@ -138,7 +136,7 @@ class SoftmaxWithLossLayer:
         return dx
 
 
-# TODO: FC 다시 구현해야함
+# TODO: FC
 
 class FullyConnectedLayer:
     def __init__(self, W, bias, batch_size):
