@@ -15,6 +15,7 @@ if GPU:
     print("using gpu:", np.cuda.is_available())
 
 import numpy as np
+
 print()
 
 stopwords_agg = stopwords.words('english') + list(punctuation)
@@ -46,6 +47,7 @@ def get_generated_sequence_bible(start_token):
 
 # loading word vector
 wv = get_model_instance(model_name='glove_', model_filename='glove.6B.50d.txt', filepath='pretrained_models')
+# wv = get_model_instance(model_name='glove_', model_filename='glove.840B.300d.txt', filepath='pretrained_models')
 
 # 이 아래는 이 데이터 specific 전처리
 with open('data/bible_in_basic_english.txt', 'r') as f:
@@ -57,9 +59,33 @@ def get_selected_book_of_bible(bookname):
     return [line for line in raw if line.startswith(bookname)]
 
 
-book_of_bible = 'Mat'
-texts = get_selected_book_of_bible(book_of_bible)
-texts = texts[30:130]
+def get_bible_book_names(raw_bible_lines):
+    book_names = {}
+    for line in raw_bible_lines:
+        local_book_name = line.split(' ')[0]
+        if local_book_name.lower() == 'holy':
+            continue
+        if not book_names.get(local_book_name):
+            book_names[local_book_name] = 1
+    return list(book_names.keys())
+
+
+# all_bibles = get_bible_book_names(raw)
+all_bibles = ['Gen', 'Exo', 'Lev', 'Num', 'Deu', 'Jos', 'Jug', 'Rut', '1Sa', '2Sa', '1Ki', '2Ki', '1Ch', '2Ch', 'Ezr',
+              'Neh', 'Est', 'Job', 'Psm', 'Pro', 'Ecc', 'Son', 'Isa', 'Jer', 'Lam', 'Eze', 'Dan', 'Hos', 'Joe', 'Amo',
+              'Oba', 'Jon', 'Mic', 'Nah', 'Hab', 'Zep', 'Hag', 'Zec', 'Mal', 'Mat', 'Mak', 'Luk', 'Jhn', 'Act', 'Rom',
+              '1Co', '2Co', 'Gal', 'Eph', 'Phl', 'Col', '1Ts', '2Ts', '1Ti', '2Ti', 'Tit', 'Phm', 'Heb', 'Jas', '1Pe',
+              '2Pe', '1Jn', '2Jn', '3Jn', 'Jud', 'Rev']
+
+books = ['Act', 'Rom', '1Co', '2Co', 'Gal', 'Eph', 'Phl', 'Col', '1Ts', '2Ts', '1Ti', '2Ti', 'Tit', 'Phm', 'Heb', 'Jas',
+         '1Pe', '2Pe', '1Jn', '2Jn', '3Jn', 'Jud', ]
+
+texts = []
+for book in books:
+    texts += get_selected_book_of_bible(book)
+
+# texts = get_selected_book_of_bible(book_of_bible)
+# texts = texts[30:]
 texts = process_multiple_lines_strip(texts)
 tokenized_matrix = get_tokenized_matrix(texts, tokenizer='word_tokenize', exclude_stopwords=False,
                                         stopwords_options=[])
@@ -111,9 +137,10 @@ print(y_true.shape)
 print(len(total_used_tokens))
 
 whole_batch = X_vectors.shape[0]
-model = RNNTrainer(input_dim=input_dim, hidden_dim=200, output_size=len(unique_tokens))
-model.fit(X_vectors, y_true, batch_size=whole_batch, lr=1, n_epochs=1000, print_many=False, verbose=1)
+model = RNNTrainer(input_dim=input_dim, hidden_dim=1000, output_size=len(unique_tokens))
+model.fit(X_vectors, y_true, batch_size=1000, lr=0.2, n_epochs=3000, print_many=False, verbose=1)
 
+print()
 # Generation logic
 # test_sequences = get_sequences_from_tokens_window(unique_tokens, token2idx, window_size=2)
 timer = Timer(len(total_used_tokens))

@@ -1,5 +1,7 @@
 from random import choice
 
+from torch.nn import RNN
+
 from deepnp.trainers import *
 from hidden_packages.langframe.functions import get_model_instance
 from nlp_commons.modules import *
@@ -64,8 +66,8 @@ filepaths = [
     'data/fairy_tales_corpus/cluster005/105115394-FATTY-AND-THE-GREEN-CORN-Arthur-Scott-Bailey.txt',
     'data/fairy_tales_corpus/cluster005/144629276-A-TERRIBLE-FRIGHT-Arthur-Scott-Bailey.txt',
     'data/fairy_tales_corpus/cluster005/228342269-FATTY-COON-AND-THE-MONSTER-Arthur-Scott-Bailey.txt',
-    # 'data/fairy_tales_corpus/cluster005/471142238-JOHNNIE-GREEN-IS-DISAPPOINTED-Arthur-Scott-Bailey.txt',
-    # 'data/fairy_tales_corpus/cluster005/522590877-FATTY-DISCOVERS-MRS.-TURTLE-S-SECRET-Arthur-Scott-Bailey.txt',
+    'data/fairy_tales_corpus/cluster005/471142238-JOHNNIE-GREEN-IS-DISAPPOINTED-Arthur-Scott-Bailey.txt',
+    'data/fairy_tales_corpus/cluster005/522590877-FATTY-DISCOVERS-MRS.-TURTLE-S-SECRET-Arthur-Scott-Bailey.txt',
 ]
 
 bodies = []
@@ -102,6 +104,7 @@ y = seqs[:, -1]
 
 sample_size = None
 input_dim = 50
+hidden_dim = 50
 
 X_vectors, total_used_tokens = [], []
 for idx, arr in enumerate(X[:sample_size]):
@@ -118,8 +121,10 @@ print(y_true.shape)
 print(len(total_used_tokens))
 
 whole_batch = X_vectors.shape[0]
-model = RNNTrainer(input_dim=input_dim, hidden_dim=50, output_size=len(unique_tokens))
-model.fit(X_vectors, y_true, batch_size=whole_batch, lr=0.85, n_epochs=3000, print_many=False)
+model = RNNTrainer(input_dim=input_dim, hidden_dim=hidden_dim, output_size=len(unique_tokens))
+model.fit(X_vectors, y_true, batch_size=whole_batch//10, lr=0.1, n_epochs=3000, print_many=False)
+
+
 
 # Generation logic
 # test_sequences = get_sequences_from_tokens_window(unique_tokens, token2idx, window_size=2)
