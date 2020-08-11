@@ -3,7 +3,7 @@ import nltk
 from nlp_commons.functions import *
 from nlp_commons.modules import *
 
-from deepnp.models import *
+from deepnp.layers import *
 
 from nltk.corpus import stopwords
 from string import punctuation

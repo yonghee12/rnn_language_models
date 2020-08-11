@@ -80,6 +80,8 @@ all_bibles = ['Gen', 'Exo', 'Lev', 'Num', 'Deu', 'Jos', 'Jug', 'Rut', '1Sa', '2S
 books = ['Act', 'Rom', '1Co', '2Co', 'Gal', 'Eph', 'Phl', 'Col', '1Ts', '2Ts', '1Ti', '2Ti', 'Tit', 'Phm', 'Heb', 'Jas',
          '1Pe', '2Pe', '1Jn', '2Jn', '3Jn', 'Jud', ]
 
+books = ['Act', 'Rom', '1Co', '2Co', 'Gal', 'Eph', 'Phl', 'Col']
+
 texts = []
 for book in books:
     texts += get_selected_book_of_bible(book)
@@ -137,8 +139,8 @@ print(y_true.shape)
 print(len(total_used_tokens))
 
 whole_batch = X_vectors.shape[0]
-model = RNNTrainer(input_dim=input_dim, hidden_dim=1000, output_size=len(unique_tokens))
-model.fit(X_vectors, y_true, batch_size=1000, lr=0.2, n_epochs=3000, print_many=False, verbose=1)
+model = RNNTrainer(input_dim=input_dim, hidden_dim=500, output_size=len(unique_tokens), backend='numpy')
+model.fit(X_vectors, y_true, batch_size=whole_batch//10, lr=0.1, n_epochs=10, print_many=False, verbose=1)
 
 print()
 # Generation logic
