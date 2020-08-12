@@ -140,7 +140,7 @@ print(len(total_used_tokens))
 
 whole_batch = X_vectors.shape[0]
 model = RNNTrainer(input_dim=input_dim, hidden_dim=500, output_size=len(unique_tokens), backend='numpy')
-model.fit(X_vectors, y_true, batch_size=whole_batch//10, lr=0.1, n_epochs=10, print_many=False, verbose=1)
+model.fit(X_vectors, y_true, batch_size=whole_batch//10, lr=0.1, n_epochs=30, print_many=False, verbose=1)
 
 print()
 # Generation logic
