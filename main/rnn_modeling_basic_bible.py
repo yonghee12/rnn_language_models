@@ -80,7 +80,9 @@ all_bibles = ['Gen', 'Exo', 'Lev', 'Num', 'Deu', 'Jos', 'Jug', 'Rut', '1Sa', '2S
 books = ['Act', 'Rom', '1Co', '2Co', 'Gal', 'Eph', 'Phl', 'Col', '1Ts', '2Ts', '1Ti', '2Ti', 'Tit', 'Phm', 'Heb', 'Jas',
          '1Pe', '2Pe', '1Jn', '2Jn', '3Jn', 'Jud', ]
 
-books = ['Act', 'Rom', '1Co', '2Co', 'Gal', 'Eph', 'Phl', 'Col']
+# books = ['Act', 'Rom', '1Co', '2Co', 'Gal', 'Eph', 'Phl', 'Col']
+# books = ['Act']
+books = ['Act', 'Rom']
 
 texts = []
 for book in books:
@@ -104,7 +106,7 @@ token2idx, idx2token = get_item2idx(unique_tokens, unique=True, start_from_one=F
 
 # (0, 1), (0, 1, 2), (0, 1, 2, 3) 등으로 sequence 분할 후 padding
 # bigram, trigram 등 사용
-window_size = 3
+window_size = 5
 sequences = get_sequences_matrix_window(nested_tokens, token2idx, window_size)
 
 # input의 timestep이 서로 다를 경우 padding 필요
@@ -115,9 +117,12 @@ input_sequences = sequences
 # input_sequences = padded_sequences
 
 # input data와 정답 레이블 분리
+limit = None
+# limit = 1000
 seqs = np.array(input_sequences)
-X = seqs[:, :-1]
-y = seqs[:, -1]
+X = seqs[:limit, :-1]
+y = seqs[:limit, -1]
+y_stack = seqs[:limit, 1:]
 
 # Input Sample
 
@@ -133,16 +138,17 @@ for idx, arr in enumerate(X[:sample_size]):
 
 X_vectors = np.array(X_vectors)
 y_true = y[:len(X_vectors)]
+y_true_stack = y_stack[:len(X_vectors)]
 
 print(X_vectors.shape)
 print(y_true.shape)
+print(y_true_stack.shape)
 print(len(total_used_tokens))
 
 whole_batch = X_vectors.shape[0]
-model = RNNTrainer(input_dim=input_dim, hidden_dim=500, output_size=len(unique_tokens), backend='numpy')
-model.fit(X_vectors, y_true, batch_size=whole_batch//10, lr=0.1, n_epochs=30, print_many=False, verbose=1)
-
-
+model = RNNTrainer(input_dim=input_dim, hidden_dim=2800, output_size=len(unique_tokens),
+                   backend='numpy', timemethod='stack')
+model.fit(X_vectors, y_true_stack, batch_size=whole_batch, lr=0.1, n_epochs=5000, print_many=False, verbose=1)
 
 print()
 # Generation logic
@@ -166,7 +172,7 @@ for _ in range(1000):
     output_str = ' '.join([w1, w2, w3, w4])
     random_gens.append(output_str)
 
-loss_val = 'whole_matthew'
+loss_val = '0.015'
 with open(f'results/bible_generated_w3_loss{loss_val}.txt', 'w') as f:
     f.write('\n'.join(gens))
     f.close()
