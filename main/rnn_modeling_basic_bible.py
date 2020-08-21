@@ -28,8 +28,9 @@ print(len(unique_tokens))
 whole_batch = X_vectors.shape[0]
 
 model = RNNTrainer(input_dim=X_vectors.shape[2], hidden_dim=1000, output_size=len(unique_tokens),
-                   backend='numpy', timemethod='stack')
-model.fit(X_vectors, y_true_stack, batch_size=whole_batch // 20, lr=0.1, n_epochs=500, print_many=False, verbose=1)
+                   layer='lstm', backend='numpy', timemethod='stack', stateful=False)
+model.fit(X_vectors, y_true_stack, batch_size=whole_batch // 20, lr=0.3, n_epochs=500, print_many=False, verbose=1)
+print()
 
 max_timesteps = 4
 for start_word in flattened_used_tokens[100:300]:
