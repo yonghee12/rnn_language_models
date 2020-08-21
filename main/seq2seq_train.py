@@ -46,42 +46,49 @@ def eval_seq2seq(model, question, correct, id_to_char, verbose=False, is_reverse
 (x_train, y_train), (x_test, y_test) = sequence.load_data('addition.txt')
 char_to_id, id_to_char = sequence.get_vocab()
 
+# 개선: reverse 사용
+# https://papers.nips.cc/paper/5346-sequence-to-sequence-learning-with-neural-networks.pdf
+do_reverse = True
+if do_reverse:
+    x_train, x_test = x_train[:, ::-1], x_test[:, ::-1]  # 각각 (N, T) 이기 때문
+
 embedding_dim = 16
 hidden_dim = 128
 vocab_size = len(char_to_id)
 batch_size = 128
-n_epoch = 25
+n_epoch = 10
 whole_batch = len(x_train)
 # x_train = x_train[:1000, :]
 # y_train = y_train[:1000, :]
-
-model = Seq2Seq(embedding_dim, hidden_dim, vocab_size)
-optimizer = Adam
-trainer = Trainer(model, optimizer, lr=0.001)
-# for _ in range(10):
-#     trainer.fit(x_train, y_train, n_epochs=1, batch_size=whole_batch//3, verbose=1)
+for peeky in [False, True]:
+    model = Seq2Seq(embedding_dim, hidden_dim, vocab_size, peeky=peeky)
+    optimizer = Adam
+    trainer = Trainer(model, optimizer, lr=0.001)
+    trainer.fit(x_train, y_train, n_epochs=20, batch_size=batch_size, verbose=1)
 
 print()
-acc_list = []
-for epoch in range(n_epoch):
-    trainer.fit(x_train, y_train, n_epochs=1, batch_size=batch_size, verbose=1)
-
-    correct_num = 0
-    for i in range(len(x_test)):
-        question, correct = x_test[[i]], y_test[[i]]
-        verbose = i < 10
-        if i % 1000 == 0: print(i / len(x_test))
-        correct_num += eval_seq2seq(model, question, correct,
-                                    id_to_char, verbose, is_reverse=False)
-
-    acc = float(correct_num) / len(x_test)
-    acc_list.append(acc)
-    print('검증 정확도 %.3f%%' % (acc * 100))
 
 # print()
-x = np.arange(len(acc_list))
-plt.plot(x, acc_list, marker='o')
-plt.xlabel('에폭')
-plt.ylabel('정확도')
-plt.ylim(0, 1.0)
-plt.show()
+# acc_list = []
+# for epoch in range(n_epoch):
+#     trainer.fit(x_train, y_train, n_epochs=1, batch_size=batch_size, verbose=1)
+#
+#     correct_num = 0
+#     for i in range(len(x_test)):
+#         question, correct = x_test[[i]], y_test[[i]]
+#         verbose = i < 5
+#         if i % 1000 == 0: print(f"{round(i / len(x_test) * 100, 2)}%")
+#         correct_num += eval_seq2seq(model, question, correct,
+#                                     id_to_char, verbose, is_reverse=False)
+#
+#     acc = float(correct_num) / len(x_test)
+#     acc_list.append(acc)
+#     print('검증 정확도 %.3f%%' % (acc * 100))
+#
+# # print()
+# x = np.arange(len(acc_list))
+# plt.plot(x, acc_list, marker='o')
+# plt.xlabel('에폭')
+# plt.ylabel('정확도')
+# plt.ylim(0, 1.0)
+# plt.show()
