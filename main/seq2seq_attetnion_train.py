@@ -65,7 +65,7 @@ whole_batch = len(x_train)
 model = Seq2SeqWithAttention(embedding_dim, hidden_dim, vocab_size)
 optimizer = Adam
 trainer = Trainer(model, optimizer, lr=0.001)
-# trainer.fit(x_train, y_train, n_epochs=1, batch_size=batch_size, verbose=2)
+trainer.fit(x_train, y_train, n_epochs=1, batch_size=batch_size, verbose=2)
 
 
 acc_list = []
